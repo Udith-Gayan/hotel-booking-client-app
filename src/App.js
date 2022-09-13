@@ -1,50 +1,26 @@
-import React, { Fragment, useCallback, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import  ContractService  from './services/contract-service'
-// const {ContractService} = require('./services/contract-service')
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout/Layout";
+import LandingPage from "./components/LandingPage/LandingPage";
+import HotelOwnerRegisterLogin from "./components/HotelOwnerRegisterLogin/HotelOwnerRegisterLogin";
+import HotelOverview from "./components/HotelOverview/HotelOverview";
+import DashboardLayout from "./components/DashboardLayout/DashboardLayout";
 
 function App() {
-  const hotelRegObject = {type:"getAllBookings"};
-  const contractService = ContractService.instance;
-  
-  const handleChangeAddress = useCallback(async () => {
-    await contractService.init();
-    console.log('button clicked by udith');
-    
-    try {
-      const output = await contractService.requestHotelRegistration(hotelRegObject);
-      console.log(output)
-    } catch (error) {
-      console.log(error)
-    }
-    
-  }, [hotelRegObject]);
-  
-
-
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <div>
-          <button onClick={handleChangeAddress}>Register hotel</button>
-        </div>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route exact path="/" element={<LandingPage />}></Route>
+          <Route
+            path="/hotel-owner-register-login"
+            element={<HotelOwnerRegisterLogin />}
+          ></Route>
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route path="hotel-overview" element={<HotelOverview />}></Route>
+          </Route>
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
 }
 
