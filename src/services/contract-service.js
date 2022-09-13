@@ -1,28 +1,3 @@
-// const HotPocket = require('hotpocket-js-client');
-// const process = require('process')
-// import HotPocket from 'hotpocket-js-client'
-
-
-// async function clientApp() {
-
-//     const userKeyPair = await HotPocket.generateKeys();
-
-//     const pkhex = Buffer.from(userKeyPair.publicKey).toString('hex');
-//     console.log('My public key is: ' + pkhex);
-
-//     const client = await HotPocket.createClient(['wss://localhost:8081'], userKeyPair);
-
-//     // Establish HotPocket connection.
-//     if (!await client.connect()) {
-//         console.log('Connection failed.');
-//         return;
-//     }
-
-//     console.log('HotPocket Connected.');
-// }
-
-// clientApp();
-
 const nodeIp = process.env.REACT_APP_CONTRACT_NODE_IP;
 const nodePort = process.env.REACT_APP_CONTRACT_NODE_PORT;
 const HotPocket = window.HotPocket;
@@ -72,7 +47,7 @@ export default class ContractService {
                 if (o.error) {
                     this.promiseMap.get(pId).rejecter(o.error);
                 } else {
-                    this.promiseMap.get(pId).resolver(o);
+                    this.promiseMap.get(pId).resolver(o.success);
                 }
 
                 this.promiseMap.delete(pId);
