@@ -1,4 +1,4 @@
-const ContractService = require('./contract-service');
+import ContractService from './contract-service';
 
 
 // const xrpl = require('xrpl');
@@ -19,7 +19,7 @@ export default class HotelService {
     // #walletServer = 'wss://xls20-sandbox.rippletest.net:51233';
 
     #xrplApi = null;
-    #userWallet = {
+    userWallet = {
         address: null,
         secret: null,
         balance: null,
@@ -29,7 +29,7 @@ export default class HotelService {
     #registrationURI = 'URIRegistration';
 
     #xrplClient = null;
-    #contractService = ContractService.instance;
+    contractService = ContractService.instance;
     #hotelId = 0;
 
     constructor() {
@@ -79,18 +79,18 @@ export default class HotelService {
      * Return {walletAddress, walletSecret}
      */
     async createNewUserWallet() {
-        if (this.#userWallet.address == null || this.#userWallet.secret == null) {
+        if (this.userWallet.address == null || this.userWallet.secret == null) {
             try {
                 // await this.#xrplApi.connect();
                 await this.#xrplClient.connect();
 
                 const new_wallet = xrpl.Wallet.generate();
                 await this.#getFunded(new_wallet.address, 30);
-                this.#userWallet.balance = (await this.#xrplClient.getXrpBalance(new_wallet.address));
-                this.#userWallet.address = new_wallet.address;
-                this.#userWallet.secret = new_wallet.seed;
-                this.#userWallet.publicKey = new_wallet.publicKey;
-                this.#userWallet.privateKey = new_wallet.privateKey;
+                this.userWallet.balance = (await this.#xrplClient.getXrpBalance(new_wallet.address));
+                this.userWallet.address = new_wallet.address;
+                this.userWallet.secret = new_wallet.seed;
+                this.userWallet.publicKey = new_wallet.publicKey;
+                this.userWallet.privateKey = new_wallet.privateKey;
                 console.log(new_wallet);
             } catch (error) {
                 console.log(`Error in account creation: ${error}`);
@@ -99,7 +99,7 @@ export default class HotelService {
                 this.#xrplClient.disconnect();
             }
         }
-        return { walletAddress: this.#userWallet.address, walletSecret: this.#userWallet.secret };
+        return { walletAddress: this.userWallet.address, walletSecret: this.userWallet.secret };
     }
 
 
@@ -126,20 +126,20 @@ export default class HotelService {
 
 
             const the_wallet = xrpl.Wallet.fromSeed(seed);
-            this.#userWallet.balance = (await this.#xrplClient.getXrpBalance(the_wallet.address));
-            this.#userWallet.address = the_wallet.address;
-            this.#userWallet.secret = the_wallet.seed;
-            this.#userWallet.publicKey = the_wallet.publicKey;
-            this.#userWallet.privateKey = the_wallet.privateKey;
+            this.userWallet.balance = (await this.#xrplClient.getXrpBalance(the_wallet.address));
+            this.userWallet.address = the_wallet.address;
+            this.userWallet.secret = the_wallet.seed;
+            this.userWallet.publicKey = the_wallet.publicKey;
+            this.userWallet.privateKey = the_wallet.privateKey;
 
             if (isHotel) {
                 const msg = {
                     type: 'getHotels',
                     filters: {
-                        HotelWalletAddress: this.#userWallet.address
+                        HotelWalletAddress: this.userWallet.address
                     }
                 }
-                const result = await this.#contractService.submitInputToContract(msg);
+                const result = await this.contractService.submitInputToContract(msg);
                 if (result.hotels.length > 0) {
                     this.#hotelId = result.hotels[0].Id;
                 }
@@ -166,7 +166,7 @@ export default class HotelService {
             type: messageType,
             command: messageCommand,
             data: {
-                HotelWalletAddress: this.#userWallet.address,
+                HotelWalletAddress: this.userWallet.address,
                 Name: hotelObj.hotelName,
                 Address: hotelObj.location,
                 Email: hotelObj.email
@@ -175,7 +175,8 @@ export default class HotelService {
 
         let result;
         try {
-            result = await this.#contractService.submitInputToContract(submitObj);
+            await this.createNewUserWallet();
+            result = await this.contractService.submitInputToContract(submitObj);
             // result: { {"rowId":4,"offerId":"266BF70C1E820CCD8597B99B1A31E682E7E883D4C0C2385CE71A3405C180DF79"} }
             this.#hotelId = result.rowId;
             result = await this.#acceptHotelRegistrationOffer(result);
@@ -196,14 +197,26 @@ export default class HotelService {
             // Connect to xrpl to accept the offer
             await this.#xrplClient.connect();
 
-            const transactionBlob = {
-                TransactionType: 'NFTokenAcceptOffer',
-                Account: this.#userWallet.address,
-                NFTokenSellOffer: regObj.offerId,
-                Memos: []
-            };
-            const wallet = xrpl.Wallet.fromSeed(this.#userWallet.secret)
-            const tx = await this.#xrplClient.submitAndVerify(transactionBlob, { wallet })
+            // const transactionBlob = {
+            //     TransactionType: 'NFTokenAcceptOffer',
+            //     Account: this.userWallet.address,
+            //     NFTokenSellOffer: regObj.offerId,
+            //     Memos: []
+            // };
+
+            const prepared = await this.#xrplClient.autofill(
+                {
+                    TransactionType: 'NFTokenAcceptOffer',
+                    Account: this.userWallet.address,
+                    NFTokenSellOffer: regObj.offerId,
+                    Memos: []
+                }
+            );
+
+
+            const wallet = xrpl.Wallet.fromSeed(this.userWallet.secret)
+            const signed = wallet.sign(prepared);
+            const tx = await this.#xrplClient.submitAndWait(signed.tx_blob);
 
             if (tx.result.meta.TransactionResult !== "tesSUCCESS") {
                 throw ('Hotel Registration offer not accepted successfully.');
@@ -214,11 +227,11 @@ export default class HotelService {
                 type: messageType,
                 command: messageCommand,
                 data: {
-                    hotelWalletAddress: this.#userWallet.address,
+                    hotelWalletAddress: this.userWallet.address,
                     rowId: regObj.rowId
                 }
             }
-            result = await this.#contractService.submitInputToContract(submitObj);
+            result = await this.contractService.submitInputToContract(submitObj);
 
         } catch (error) {
             throw (error);
@@ -241,10 +254,10 @@ export default class HotelService {
         try {
             await this.#xrplClient.connect();
 
-            const _wallet = xrpl.Wallet.fromSeed(this.#userWallet.secret);
+            const _wallet = xrpl.Wallet.fromSeed(this.userWallet.secret);
 
             // Prepare minting URI
-            const rNfts = await this.#getNfts(this.#userWallet.address, this.#registrationURI, contractWalletAddress)
+            const rNfts = await this.#getNfts(this.userWallet.address, this.#registrationURI, contractWalletAddress)
             let regNft;
             if (rNfts && rNfts.length > 0) {
                 regNft = rNfts[0];
@@ -256,7 +269,7 @@ export default class HotelService {
             // Mint a new token for the room
             const prepared = await this.#xrplClient.autofill({
                 "TransactionType": "NFTokenMint",
-                "Account": this.#userWallet.address,
+                "Account": this.userWallet.address,
                 "NFTokenTaxon": 0,
                 // "Amount": xrpl.xrpToDrops(xrpAmount.toString()),
                 "URI": xrpl.convertStringToHex(new_uri),
@@ -269,7 +282,7 @@ export default class HotelService {
             console.log("Transaction result:", tx.result.meta.TransactionResult);
 
             // Get the token Id of the minted token
-            let accNfts = await this.#getNfts(this.#userWallet.address, new_uri, this.#userWallet.address)
+            let accNfts = await this.#getNfts(this.userWallet.address, new_uri, this.userWallet.address)
             const newTokenId = accNfts[0].NFTokenID;
 
             
@@ -279,10 +292,10 @@ export default class HotelService {
                 data: {
                     name: roomObj.roomName,
                     roomNftId: newTokenId,
-                    hotelWalletAddress: this.#userWallet.address
+                    hotelWalletAddress: this.userWallet.address
                 }
             }
-            result = await this.#contractService.submitInputToContract(submitObj)
+            result = await this.contractService.submitInputToContract(submitObj)
 
 
         } catch (error) {
@@ -330,7 +343,7 @@ export default class HotelService {
                 }
             }
 
-            result = await this.#contractService.submitInputToContract(submitObj);
+            result = await this.contractService.submitInputToContract(submitObj);
 
 
         } catch (error) {
@@ -358,7 +371,7 @@ export default class HotelService {
 
         let result;
         try {
-            result = await this.#contractService.submitInputToContract(submitObj);
+            result = await this.contractService.submitInputToContract(submitObj);
         } catch (error) {
             throw (error);
         }
@@ -387,7 +400,7 @@ export default class HotelService {
 
         let result;
         try {
-            result = await this.#contractService.submitInputToContract(submitObj);
+            result = await this.contractService.submitInputToContract(submitObj);
         } catch (error) {
             throw (error);
         }
@@ -406,7 +419,7 @@ export default class HotelService {
 
         let result;
         try {
-            result = await this.#contractService.submitInputToContract(submitObj);
+            result = await this.contractService.submitInputToContract(submitObj);
         } catch (error) {
             throw (error);
         }

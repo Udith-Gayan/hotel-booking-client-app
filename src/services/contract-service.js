@@ -14,10 +14,11 @@ export default class ContractService {
     promiseMap = new Map();
 
     async init() {
-        if (this.userKeyPair == null)
+        if (this.userKeyPair == null) {
             console.log(1)
             this.userKeyPair = await HotPocket.generateKeys();
             console.log(2)
+        }
         if (this.client == null) {
             console.log(3)
             this.client = await HotPocket.createClient([this.server], this.userKeyPair);
@@ -101,7 +102,7 @@ export default class ContractService {
     // #region Custom Domain calls
 
     async requestHotelRegistration(hotelDataObject) {
-        return await this.submitInputToContract(hotelDataObject);     
+        return await this.submitInputToContract(hotelDataObject);
     }
 
     async confirmHotelRegistration() {
