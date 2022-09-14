@@ -175,7 +175,6 @@ export default class HotelService {
 
         let result;
         try {
-            await this.createNewUserWallet();
             result = await this.contractService.submitInputToContract(submitObj);
             // result: { {"rowId":4,"offerId":"266BF70C1E820CCD8597B99B1A31E682E7E883D4C0C2385CE71A3405C180DF79"} }
             this.#hotelId = result.rowId;
