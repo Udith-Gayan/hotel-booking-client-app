@@ -10,7 +10,10 @@ function DashboardLayout() {
       {/* <Suspense fallback={<Spinner />}>
         <h1>kasun</h1>
       </Suspense> */}
-      <Outlet />
+      <div className="m-5">
+        <Outlet />
+      </div>
+
       <Footer />
     </div>
   );

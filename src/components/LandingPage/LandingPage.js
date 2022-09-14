@@ -4,8 +4,11 @@ import classes from "./LandingPage.module.css";
 import Button from "react-bootstrap/Button";
 import "../Shared/styles/common.css";
 import HotelOwnerRegisterForm from "../HotelOwnerRegisterForm/HotelOwnerRegisterForm";
+import HotelOwnerLoginForm from "../HotelOwnerLoginForm/HotelOwnerLoginForm";
+import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
+  const navigate = useNavigate();
   const [customerLogVisibility, setCustomerLogVisibility] = useState(false);
   const [hotelOwnerLogVisibility, setHotelOwnerLogVisibility] = useState(false);
   const [customerRegisterVisibility, setCustomerRegisterVisibility] =
@@ -20,10 +23,14 @@ const LandingPage = () => {
     hotelOwnerRegisterFormVisibility,
     setHotelOwnerRegisterFormVisibility,
   ] = useState(false);
+
+  const [hotelOwnerLoginFormVisibility, setHotelOwnerLoginFormVisibility] =
+    useState(false);
   const customerClick = () => {
     setCustomerLogVisibility(!customerLogVisibility);
-    setCustomerRegisterVisibility(!customerRegisterVisibility);
-    setCustomerLoginVisibility(!customerLoginVisibility);
+    navigate("/dashboard/hotels");
+    // setCustomerRegisterVisibility(!customerRegisterVisibility);
+    // setCustomerLoginVisibility(!customerLoginVisibility);
   };
 
   const hotelOwnerClick = () => {
@@ -49,12 +56,15 @@ const LandingPage = () => {
 
   const hotelOwnerLogin = () => {
     console.log("hotelOwnerLogin");
+    setHotelOwnerLoginFormVisibility(!hotelOwnerLoginFormVisibility);
+    setHotelOwnerRegisterVisibility(!hotelOwnerRegisterVisibility);
+    setHotelOwnerLoginVisibility(!hotelOwnerLoginVisibility);
   };
   return (
     <div className={classes.landingPageBackground}>
       <div className={classes.box}>
         {hotelOwnerRegisterFormVisibility && <HotelOwnerRegisterForm />}
-
+        {hotelOwnerLoginFormVisibility && <HotelOwnerLoginForm />}
         <div>
           {!(customerLogVisibility || hotelOwnerLogVisibility) && (
             <Button

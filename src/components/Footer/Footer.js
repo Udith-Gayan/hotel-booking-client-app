@@ -3,7 +3,7 @@ import classes from "./Footer.module.css";
 
 const Footer = () => {
   return (
-    <div className="bg-dark p-4 mt-8">
+    <div>
       <p className={classes.footerText}>
         Copyright © 2022 Hotel Booking System
       </p>

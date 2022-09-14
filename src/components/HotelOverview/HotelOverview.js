@@ -6,7 +6,7 @@ import Card from "react-bootstrap/Card";
 import classes from "./HotelOverview.module.css";
 import CreateRoom from "../CreateRoom/CreateRoom";
 
-const HotelOverview = () => {
+const HotelOverview = ({ customer }) => {
   const [createRoomVisibility, setCreateRoomVisibility] = useState(false);
 
   const createRoom = () => {
@@ -30,11 +30,14 @@ const HotelOverview = () => {
           Janadhipathi Mawatha, Colombo
         </p>
       </div>
+      {/* {customer === "customer" && ( */}
       <div>
         <Button variant="primary" onClick={() => createRoom()}>
           Open Room Creation Panel
         </Button>
       </div>
+      {/* )} */}
+
       {createRoomVisibility && (
         <div>
           <CreateRoom />
@@ -48,10 +51,7 @@ const HotelOverview = () => {
           <Card.Body>
             <Card.Title>Room Deluxe</Card.Title>
             <Card.Text>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled
+              22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683
             </Card.Text>
           </Card.Body>
         </Card>
@@ -61,10 +61,7 @@ const HotelOverview = () => {
           <Card.Body>
             <Card.Title>Room Platinum</Card.Title>
             <Card.Text>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled
+              22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683
             </Card.Text>
           </Card.Body>
         </Card>
@@ -74,10 +71,7 @@ const HotelOverview = () => {
           <Card.Body>
             <Card.Title>Room Gold</Card.Title>
             <Card.Text>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled
+              22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683
             </Card.Text>
           </Card.Body>
         </Card>
