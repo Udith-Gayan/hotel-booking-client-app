@@ -13,7 +13,6 @@ function DashboardLayout() {
       <div className="m-5">
         <Outlet />
       </div>
-
       <Footer />
     </div>
   );

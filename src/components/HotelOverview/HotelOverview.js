@@ -6,6 +6,7 @@ import Card from "react-bootstrap/Card";
 import classes from "./HotelOverview.module.css";
 import CreateRoom from "../CreateRoom/CreateRoom";
 
+
 const HotelOverview = ({ customer }) => {
   const [createRoomVisibility, setCreateRoomVisibility] = useState(false);
 
@@ -37,7 +38,6 @@ const HotelOverview = ({ customer }) => {
         </Button>
       </div>
       {/* )} */}
-
       {createRoomVisibility && (
         <div>
           <CreateRoom />
