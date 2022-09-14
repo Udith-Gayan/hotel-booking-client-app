@@ -4,6 +4,8 @@ import LandingPage from "./components/LandingPage/LandingPage";
 import HotelOwnerRegisterLogin from "./components/HotelOwnerRegisterLogin/HotelOwnerRegisterLogin";
 import HotelOverview from "./components/HotelOverview/HotelOverview";
 import DashboardLayout from "./components/DashboardLayout/DashboardLayout";
+import Bookings from "./components/Bookings/Bookings";
+import Hotels from "./components/Hotels/Hotels";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
           ></Route>
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route path="hotel-overview" element={<HotelOverview />}></Route>
+            <Route path="bookings" element={<Bookings />}></Route>
+            <Route path="hotels" element={<Hotels />}></Route>
           </Route>
         </Routes>
       </Layout>
