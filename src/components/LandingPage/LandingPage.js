@@ -28,12 +28,17 @@ const LandingPage = () => {
     useState(false);
   const customerClick = () => {
     setCustomerLogVisibility(!customerLogVisibility);
+    localStorage.removeItem("user");
+    localStorage.setItem("user", JSON.stringify("customer"));
     navigate("/dashboard/hotels");
     // setCustomerRegisterVisibility(!customerRegisterVisibility);
     // setCustomerLoginVisibility(!customerLoginVisibility);
   };
 
   const hotelOwnerClick = () => {
+    console.log("ddd");
+    localStorage.removeItem("user");
+    localStorage.setItem("user", JSON.stringify("hotelowner"));
     setHotelOwnerLogVisibility(!hotelOwnerLogVisibility);
     setHotelOwnerRegisterVisibility(!hotelOwnerRegisterVisibility);
     setHotelOwnerLoginVisibility(!hotelOwnerLoginVisibility);
