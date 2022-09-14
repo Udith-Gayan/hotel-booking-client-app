@@ -1,28 +1,3 @@
-// const HotPocket = require('hotpocket-js-client');
-// const process = require('process')
-// import HotPocket from 'hotpocket-js-client'
-
-
-// async function clientApp() {
-
-//     const userKeyPair = await HotPocket.generateKeys();
-
-//     const pkhex = Buffer.from(userKeyPair.publicKey).toString('hex');
-//     console.log('My public key is: ' + pkhex);
-
-//     const client = await HotPocket.createClient(['wss://localhost:8081'], userKeyPair);
-
-//     // Establish HotPocket connection.
-//     if (!await client.connect()) {
-//         console.log('Connection failed.');
-//         return;
-//     }
-
-//     console.log('HotPocket Connected.');
-// }
-
-// clientApp();
-
 const nodeIp = process.env.REACT_APP_CONTRACT_NODE_IP;
 const nodePort = process.env.REACT_APP_CONTRACT_NODE_PORT;
 const HotPocket = window.HotPocket;
@@ -39,10 +14,11 @@ export default class ContractService {
     promiseMap = new Map();
 
     async init() {
-        if (this.userKeyPair == null)
+        if (this.userKeyPair == null) {
             console.log(1)
             this.userKeyPair = await HotPocket.generateKeys();
             console.log(2)
+        }
         if (this.client == null) {
             console.log(3)
             this.client = await HotPocket.createClient([this.server], this.userKeyPair);
@@ -72,7 +48,7 @@ export default class ContractService {
                 if (o.error) {
                     this.promiseMap.get(pId).rejecter(o.error);
                 } else {
-                    this.promiseMap.get(pId).resolver(o);
+                    this.promiseMap.get(pId).resolver(o.success);
                 }
 
                 this.promiseMap.delete(pId);
@@ -126,7 +102,7 @@ export default class ContractService {
     // #region Custom Domain calls
 
     async requestHotelRegistration(hotelDataObject) {
-        return await this.submitInputToContract(hotelDataObject);     
+        return await this.submitInputToContract(hotelDataObject);
     }
 
     async confirmHotelRegistration() {
