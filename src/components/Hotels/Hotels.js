@@ -8,7 +8,16 @@ const Hotels = () => {
   const navigate = useNavigate();
   return (
     <div>
-      <h2 className="mt-3 mb-4">Hotels</h2>
+      <h2 className="mt-3 mb-4 d-inline ">Hotels</h2>
+
+      <Button
+        variant="primary"
+        className={classes.myReservationBtn}
+        onClick={() => navigate("/dashboard/my-reservations")}
+      >
+        My Reservations
+      </Button>
+
       <div className={classes.hotelListWrapper}>
         <Accordion defaultActiveKey="0">
           <Accordion.Item eventKey="0">

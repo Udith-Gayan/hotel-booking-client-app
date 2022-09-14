@@ -6,6 +6,7 @@ import HotelOverview from "./components/HotelOverview/HotelOverview";
 import DashboardLayout from "./components/DashboardLayout/DashboardLayout";
 import Bookings from "./components/Bookings/Bookings";
 import Hotels from "./components/Hotels/Hotels";
+import MyReservations from "./components/MyReservations/MyReservations";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="hotel-overview" element={<HotelOverview />}></Route>
             <Route path="bookings" element={<Bookings />}></Route>
             <Route path="hotels" element={<Hotels />}></Route>
+            <Route path="my-reservations" element={<MyReservations />}></Route>
           </Route>
         </Routes>
       </Layout>
