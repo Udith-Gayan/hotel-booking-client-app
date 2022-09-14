@@ -1,16 +1,45 @@
-import React, { useCallback, useState } from "react";
+import React, { useState, useCallback } from "react";
+import ContractService from "../../services/contract-service";
 import toast from "react-hot-toast";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router-dom";
 import classes from "./HotelOwnerRegisterForm.module.css";
+import SecretModal from "../SecretModal/SecretModal";
 import ContractService from "./../../services/contract-service";
 import HotelService from './../../services/hotel-service';
 
 const HotelOwnerRegisterForm = () => {
   // const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const hotelRegObject = { type: "getAllBookings" };
+  const handleChangeAddress = useCallback(async () => {
+    setShowModal(!showModal);
+    toast(
+      (t) => (
+        <span>
+          Please save this secret.
+          <br />
+          <br />
+          <b>FEFA23ED23DFDFD2323</b>
+          <br />
+          <br />
+          If you loose it, no one can recover it.
+          <br />
+          <br />
+          Notification will be removed in couple of minutues.
+          <br />
+          <Button variant="danger" onClick={() => toast.dismiss(t.id)}>
+            Dismiss
+          </Button>
+        </span>
+      ),
+      { duration: 30000 }
+    );
+    navigate("/dashboard/hotel-overview");
+    await contractService.init();
+    console.log("button clicked by udith");
 
- 
   const contractService = ContractService.instance;
   const hotelService = HotelService.instance;
 
@@ -43,6 +72,12 @@ const HotelOwnerRegisterForm = () => {
 
   return (
     <div className={classes.pageLayout}>
+      {showModal && (
+        <div>
+          <SecretModal />
+        </div>
+      )}
+
       <Form>
         <Form.Group className="mb-3" controlId="hotelName">
           <Form.Label>Hotel Name</Form.Label>
