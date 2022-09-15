@@ -85,7 +85,7 @@ export default class HotelService {
                 await this.#xrplClient.connect();
 
                 const new_wallet = xrpl.Wallet.generate();
-                await this.#getFunded(new_wallet.address, 30);
+                await this.#getFunded(new_wallet.address, 40);
                 this.userWallet.balance = (await this.#xrplClient.getXrpBalance(new_wallet.address));
                 this.userWallet.address = new_wallet.address;
                 this.userWallet.secret = new_wallet.seed;
@@ -126,6 +126,17 @@ export default class HotelService {
 
 
             const the_wallet = xrpl.Wallet.fromSeed(seed);
+
+            if (isHotel) {
+                const regNfts = await this.#getNfts(the_wallet.address, this.#registrationURI, contractWalletAddress);
+
+                if (regNfts?.length == 0) {
+                    throw('This is not a registered hotel. Please register.');
+                }
+
+            }
+
+
             this.userWallet.balance = (await this.#xrplClient.getXrpBalance(the_wallet.address));
             this.userWallet.address = the_wallet.address;
             this.userWallet.secret = the_wallet.seed;
@@ -175,7 +186,6 @@ export default class HotelService {
 
         let result;
         try {
-            await this.createNewUserWallet();
             result = await this.contractService.submitInputToContract(submitObj);
             // result: { {"rowId":4,"offerId":"266BF70C1E820CCD8597B99B1A31E682E7E883D4C0C2385CE71A3405C180DF79"} }
             this.#hotelId = result.rowId;
@@ -243,6 +253,24 @@ export default class HotelService {
         // result : "Hotel Registration Successful."
     }
 
+
+    async getCurrentHotelDetails() {
+        let result;
+        try {
+            const messageType = "getHotels";
+            const submitObj = {
+                type: messageType,
+                filters: {
+                    hotelWalletAddress: this.userWallet.address
+                }
+            };
+            result = await this.contractService.submitInputToContract(submitObj);
+        } catch (error) {
+            throw(error);
+        }
+
+        return result.hotels[0];
+    }
     /**
      * Create a room by minting a token. InURI field, hotel NFTID is there
      * roomObj: {roomName: <>}
@@ -262,6 +290,7 @@ export default class HotelService {
             if (rNfts && rNfts.length > 0) {
                 regNft = rNfts[0];
             }
+            console.log(regNft);
             const regNftId = regNft.NFTokenID;
             const uniqueSuffix = new Date().getTime().toString();
             const new_uri = regNftId + uniqueSuffix;
@@ -271,18 +300,20 @@ export default class HotelService {
                 "TransactionType": "NFTokenMint",
                 "Account": this.userWallet.address,
                 "NFTokenTaxon": 0,
-                // "Amount": xrpl.xrpToDrops(xrpAmount.toString()),
                 "URI": xrpl.convertStringToHex(new_uri),
                 "Flags": 1,
                 "Fee": "5"
             });
+            console.log("Mint tranaction prepared.");
 
             const signed = _wallet.sign(prepared);
             const tx = await this.#xrplClient.submitAndWait(signed.tx_blob);
             console.log("Transaction result:", tx.result.meta.TransactionResult);
 
             // Get the token Id of the minted token
-            let accNfts = await this.#getNfts(this.userWallet.address, new_uri, this.userWallet.address)
+            let accNfts = await this.#getNfts(this.userWallet.address, new_uri, this.userWallet.address);
+            console.log('MintedToken belw in one element');
+            console.log(accNfts);
             const newTokenId = accNfts[0].NFTokenID;
 
             
@@ -314,15 +345,17 @@ export default class HotelService {
         });
         console.log(nftsRes);
 
+        nftsRes = nftsRes.result.account_nfts;
+
         if (uri != null) {
-            nftsRes = nftsRes.result.account_nfts.filter(t => xrpl.convertHexToString(t.URI) == uri);
+            nftsRes = nftsRes.filter(t => xrpl.convertHexToString(t.URI) == uri);
         }
 
         if (issuer != null) {
-            nftsRes = nftsRes.result.account_nfts.filter(t => t.Issuer == issuer);
+            nftsRes = nftsRes.filter(t => t.Issuer == issuer);
         }
 
-        return nftsRes.result.account_nfts;
+        return nftsRes;
     }
 
     /**
