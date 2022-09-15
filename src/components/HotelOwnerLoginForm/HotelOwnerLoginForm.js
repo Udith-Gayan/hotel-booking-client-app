@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const HotelOwnerLoginForm = () => {
   const navigate = useNavigate();
   const Login = () => {
-    navigate("/dashboard/bookings");
+    navigate("/dashboard/hotel-owner-login-overview");
     console.log("Login");
   };
   return (
