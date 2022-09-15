@@ -38,14 +38,14 @@ const Bookings = () => {
             <td>Edwyn Alannah</td>
           </tr>
           <tr>
-            <td>Marino Beach Colombo</td>
+            <td>The Kingsbury Colombo</td>
             <td>Platinum</td>
             <td>
               22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683
             </td>
-            <td>2022-02-15</td>
-            <td>2022-02-30</td>
-            <td>Denzel Jaxtyn</td>
+            <td>2022-03-15</td>
+            <td>2022-03-30</td>
+            <td>Edwyn Alannah</td>
           </tr>
         </tbody>
       </Table>
