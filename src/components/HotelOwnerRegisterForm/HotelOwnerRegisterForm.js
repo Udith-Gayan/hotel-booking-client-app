@@ -6,13 +6,13 @@ import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router-dom";
 import classes from "./HotelOwnerRegisterForm.module.css";
 import SecretModal from "../SecretModal/SecretModal";
+import ContractService from "./../../services/contract-service";
+import HotelService from './../../services/hotel-service';
 
 const HotelOwnerRegisterForm = () => {
-  const navigate = useNavigate();
-
+  // const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const hotelRegObject = { type: "getAllBookings" };
-  const contractService = ContractService.instance;
   const handleChangeAddress = useCallback(async () => {
     setShowModal(!showModal);
     toast(
@@ -40,15 +40,36 @@ const HotelOwnerRegisterForm = () => {
     await contractService.init();
     console.log("button clicked by udith");
 
+  const contractService = ContractService.instance;
+  const hotelService = HotelService.instance;
+
+
+  const [hotelName, setHotelName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [address, setAddress] = useState(null);
+
+  const submitForm = useCallback(async () => {
+    // toast.success("Registered successfully.");
+    // navigate("/dashboard/hotel-overview");
+    // await contractService.init();
+    console.log("Submtted.");
+    const regObj = {
+      hotelName: hotelName,
+      location: address,
+      email: email
+    }
+
     try {
-      const output = await contractService.requestHotelRegistration(
-        hotelRegObject
-      );
+      await contractService.init();
+      const output = await hotelService.registerHotel(regObj);
+      console.log('Register successfull');
       console.log(output);
     } catch (error) {
       console.log(error);
     }
-  }, [hotelRegObject]);
+  }, [contractService, hotelName, email, address, hotelService]);
+
+
   return (
     <div className={classes.pageLayout}>
       {showModal && (
@@ -60,20 +81,20 @@ const HotelOwnerRegisterForm = () => {
       <Form>
         <Form.Group className="mb-3" controlId="hotelName">
           <Form.Label>Hotel Name</Form.Label>
-          <Form.Control type="text" placeholder="Hotel Name" />
+          <Form.Control type="text" placeholder="Hotel Name" onChange={e => setHotelName(e.target.value)} />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email</Form.Label>
-          <Form.Control type="email" placeholder="Email" />
+          <Form.Control type="email" placeholder="Email" onChange={e => setEmail(e.target.value)} />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="address">
-          <Form.Label>Hotel Address</Form.Label>
-          <Form.Control type="text" placeholder="Hotel Address" />
+          <Form.Label>Hotel Location</Form.Label>
+          <Form.Control type="text" placeholder="Hotel Address" onChange={e => setAddress(e.target.value)} />
         </Form.Group>
 
-        <Button variant="primary" onClick={handleChangeAddress}>
+        <Button variant="primary" onClick={submitForm} >
           Register
         </Button>
       </Form>
