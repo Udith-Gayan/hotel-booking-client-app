@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from "react";
-import ContractService from "../../services/contract-service";
 import toast from "react-hot-toast";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -10,18 +9,66 @@ import ContractService from "./../../services/contract-service";
 import HotelService from './../../services/hotel-service';
 
 const HotelOwnerRegisterForm = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const contractService = ContractService.instance;
+  const hotelService = HotelService.instance;
+
   const [showModal, setShowModal] = useState(false);
-  const hotelRegObject = { type: "getAllBookings" };
-  const handleChangeAddress = useCallback(async () => {
-    setShowModal(!showModal);
-    toast(
-      (t) => (
+
+  const [hotelName, setHotelName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [address, setAddress] = useState(null);
+
+
+  // const handleChangeAddress = useCallback(async () => {
+  //   setShowModal(!showModal);
+  //   toast(
+  //     (t) => (
+  //       <span>
+  //         Please save this secret.
+  //         <br />
+  //         <br />
+  //         <b>FEFA23ED23DFDFD2323</b>
+  //         <br />
+  //         <br />
+  //         If you loose it, no one can recover it.
+  //         <br />
+  //         <br />
+  //         Notification will be removed in couple of minutues.
+  //         <br />
+  //         <Button variant="danger" onClick={() => toast.dismiss(t.id)}>
+  //           Dismiss
+  //         </Button>
+  //       </span>
+  //     ),
+  //     { duration: 30000 }
+  //   );
+
+
+
+  const submitForm = useCallback(async () => {
+    // toast.success("Registered successfully.");
+    // await contractService.init();
+    console.log("Submtted.");
+    const regObj = {
+      hotelName: hotelName,
+      location: address,
+      email: email
+    }
+    
+    try {
+      await contractService.init();
+      const newUserWallet = await hotelService.createNewUserWallet();
+      console.log(newUserWallet);
+      const output = await hotelService.registerHotel(regObj);
+      console.log('Register successfull');
+      console.log(output);
+      toast((t) => (
         <span>
-          Please save this secret.
+          Please copy and save this secret key safely.
           <br />
           <br />
-          <b>FEFA23ED23DFDFD2323</b>
+          <b>{newUserWallet.walletSecret}</b>
           <br />
           <br />
           If you loose it, no one can recover it.
@@ -35,35 +82,9 @@ const HotelOwnerRegisterForm = () => {
         </span>
       ),
       { duration: 30000 }
-    );
-    navigate("/dashboard/hotel-overview");
-    await contractService.init();
-    console.log("button clicked by udith");
-
-  const contractService = ContractService.instance;
-  const hotelService = HotelService.instance;
-
-
-  const [hotelName, setHotelName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [address, setAddress] = useState(null);
-
-  const submitForm = useCallback(async () => {
-    // toast.success("Registered successfully.");
-    // navigate("/dashboard/hotel-overview");
-    // await contractService.init();
-    console.log("Submtted.");
-    const regObj = {
-      hotelName: hotelName,
-      location: address,
-      email: email
-    }
-
-    try {
-      await contractService.init();
-      const output = await hotelService.registerHotel(regObj);
-      console.log('Register successfull');
-      console.log(output);
+      );
+      setShowModal(!showModal);
+      navigate("/dashboard/hotel-overview");
     } catch (error) {
       console.log(error);
     }

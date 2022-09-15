@@ -1,20 +1,29 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import classes from "./CreateRoom.module.css";
 
-const CreateRoom = () => {
-  const notify = () => {
-    console.log("create room");
+
+
+const CreateRoom = ({ onSubmit }) => {
+
+  const [roomName, setRoomName] = useState(null);
+
+  const notifySubmission = () => {
+    console.log("Room details submitted.");
+    if (roomName != null) {
+      onSubmit(roomName);
+    }
   };
+
   return (
     <div className={classes.createRoomForm}>
       <Form>
         <Form.Group className="mb-3" controlId="roomName">
           <Form.Label>Room Name</Form.Label>
-          <Form.Control type="text" placeholder="Room Name" />
+          <Form.Control type="text" placeholder="Room Name" onChange={e => setRoomName(e.target.value)} />
         </Form.Group>
-        <Button variant="primary" onClick={notify}>
+        <Button variant="primary" onClick={notifySubmission}>
           Submit Room Details
         </Button>
       </Form>

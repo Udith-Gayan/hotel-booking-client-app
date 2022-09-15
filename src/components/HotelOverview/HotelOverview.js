@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro"; // <-- import styles to be used
 import Button from "react-bootstrap/Button";
@@ -6,14 +6,53 @@ import Card from "react-bootstrap/Card";
 import classes from "./HotelOverview.module.css";
 import CreateRoom from "../CreateRoom/CreateRoom";
 import { useNavigate } from "react-router-dom";
+import ContractService from "./../../services/contract-service";
+import HotelService from './../../services/hotel-service';
 
 const HotelOverview = ({ customer }) => {
   const navigate = useNavigate();
-  const [createRoomVisibility, setCreateRoomVisibility] = useState(false);
+  const contractService = ContractService.instance;
+  const hotelService = HotelService.instance;
 
-  const createRoom = () => {
+  const [createRoomVisibility, setCreateRoomVisibility] = useState(false);
+  const [myHotel, setMyHotel] = useState(null);
+
+  const getMyHotelDetails =  async () => {
+    try {
+      await contractService.init();
+      const hotelObj = await hotelService.getCurrentHotelDetails();
+      const hotel = {
+        name: hotelObj.Name,
+        address: hotelObj.Address,
+        email: hotelObj.Email,
+        hotelNftId: hotelObj.HotelNftId,
+        hotelWalletAddress: hotelObj.HotelWalletAddress,
+        id: hotelObj.Id
+      }
+      setMyHotel(hotel);
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+     getMyHotelDetails();
+  }, []);
+
+  const createRoomPanel = () => {
     setCreateRoomVisibility(!createRoomVisibility);
   };
+
+  const submitRoomToCreate = async (roomName) => {
+    try {
+      const res = await hotelService.createARoom({roomName: roomName});
+      console.log(res.rowId);
+    } catch (error) {
+      console.log(error);
+    }
+  } 
+
 
   return (
     <div>
@@ -26,26 +65,27 @@ const HotelOverview = ({ customer }) => {
 
         <div className={classes.cardWrapper}>
           <p>
-            <span className={classes.title}>Name:</span> The Kingsbury Colombo
+            <span className={classes.title}>Name:</span> {myHotel?.name}
           </p>
           <p>
-            <span className={classes.title}>Email:</span> kingsburry@gmail.com
+            <span className={classes.title}>Email:</span> {myHotel?.email}
           </p>
           <p>
-            <span className={classes.title}>Address:</span> Address: 48
-            Janadhipathi Mawatha, Colombo
+            <span className={classes.title}>Address:</span>  {myHotel?.address}
           </p>
         </div>
         {JSON.parse(localStorage.getItem("user")) === "hotelowner" && (
           <div>
-            <Button variant="primary" onClick={() => createRoom()}>
+            <Button variant="primary" onClick={() => createRoomPanel()}>
               Open Room Creation Panel
             </Button>
           </div>
         )}
+
+        
         {createRoomVisibility && (
           <div>
-            <CreateRoom />
+            <CreateRoom onSubmit={submitRoomToCreate} />
           </div>
         )}
 
