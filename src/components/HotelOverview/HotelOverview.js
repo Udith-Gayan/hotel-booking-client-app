@@ -5,19 +5,37 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import classes from "./HotelOverview.module.css";
 import CreateRoom from "../CreateRoom/CreateRoom";
-import { useNavigate } from "react-router-dom";
+import RoomBook from "../RoomBook/RoomBook";
+import { Link, useNavigate } from "react-router-dom";
 import ContractService from "./../../services/contract-service";
-import HotelService from './../../services/hotel-service';
+import HotelService from "./../../services/hotel-service";
 
-const HotelOverview = ({ customer }) => {
+const roomDetails = [
+  {
+    name: "Room Deluxe",
+    id: "22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683",
+  },
+  {
+    name: "Room Platinum",
+    id: "22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683",
+  },
+  {
+    name: "Room Gold",
+    id: "22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683",
+  },
+];
+
+const HotelOverview = () => {
   const navigate = useNavigate();
   const contractService = ContractService.instance;
   const hotelService = HotelService.instance;
 
   const [createRoomVisibility, setCreateRoomVisibility] = useState(false);
+  const [bookRoomFormVisibility, setBookRoomFormVisibility] = useState(false);
+  const [roomIndex, setRoomIndex] = useState(-1);
   const [myHotel, setMyHotel] = useState(null);
 
-  const getMyHotelDetails =  async () => {
+  const getMyHotelDetails = async () => {
     try {
       await contractService.init();
       const hotelObj = await hotelService.getCurrentHotelDetails();
@@ -27,17 +45,16 @@ const HotelOverview = ({ customer }) => {
         email: hotelObj.Email,
         hotelNftId: hotelObj.HotelNftId,
         hotelWalletAddress: hotelObj.HotelWalletAddress,
-        id: hotelObj.Id
-      }
+        id: hotelObj.Id,
+      };
       setMyHotel(hotel);
-      
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-     getMyHotelDetails();
+    getMyHotelDetails();
   }, []);
 
   const createRoomPanel = () => {
@@ -46,13 +63,18 @@ const HotelOverview = ({ customer }) => {
 
   const submitRoomToCreate = async (roomName) => {
     try {
-      const res = await hotelService.createARoom({roomName: roomName});
+      const res = await hotelService.createARoom({ roomName: roomName });
       console.log(res.rowId);
     } catch (error) {
       console.log(error);
     }
-  } 
+  };
 
+  const bookRoom = (index) => {
+    console.log("booking a room", index);
+    setRoomIndex(index);
+    setBookRoomFormVisibility(!bookRoomFormVisibility);
+  };
 
   return (
     <div>
@@ -71,18 +93,18 @@ const HotelOverview = ({ customer }) => {
             <span className={classes.title}>Email:</span> {myHotel?.email}
           </p>
           <p>
-            <span className={classes.title}>Address:</span>  {myHotel?.address}
+            <span className={classes.title}>Address:</span> {myHotel?.address}
           </p>
         </div>
         {JSON.parse(localStorage.getItem("user")) === "hotelowner" && (
           <div>
             <Button variant="primary" onClick={() => createRoomPanel()}>
-              Open Room Creation Panel
+              {!createRoomVisibility ? "Open " : "Close "}
+              Room Creation Panel
             </Button>
           </div>
         )}
 
-        
         {createRoomVisibility && (
           <div>
             <CreateRoom onSubmit={submitRoomToCreate} />
@@ -90,36 +112,34 @@ const HotelOverview = ({ customer }) => {
         )}
 
         <div className={classes.cardWrapper}>
-          <Card
-            style={{ width: "18rem", display: "inline-block", margin: "5px" }}
-          >
-            <Card.Body>
-              <Card.Title>Room Deluxe</Card.Title>
-              <Card.Text>
-                22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card
-            style={{ width: "18rem", display: "inline-block", margin: "5px" }}
-          >
-            <Card.Body>
-              <Card.Title>Room Platinum</Card.Title>
-              <Card.Text>
-                22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683
-              </Card.Text>
-            </Card.Body>
-          </Card>
-          <Card
-            style={{ width: "18rem", display: "inline-block", margin: "5px" }}
-          >
-            <Card.Body>
-              <Card.Title>Room Gold</Card.Title>
-              <Card.Text>
-                22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683
-              </Card.Text>
-            </Card.Body>
-          </Card>
+          {roomDetails.map((roomDetail, index) => (
+            <Card
+              id={4}
+              key={index}
+              style={{ width: "18rem", display: "inline-block", margin: "5px" }}
+            >
+              <Card.Body>
+                <Card.Title>{roomDetail.name}</Card.Title>
+                <Card.Text>{roomDetail.id}</Card.Text>
+                {JSON.parse(localStorage.getItem("user")) === "customer" && (
+                  <Button
+                    variant="primary"
+                    id={index}
+                    onClick={() => bookRoom(index)}
+                  >
+                    Room Booking Panel
+                  </Button>
+                )}
+                {/* replace index with relevant variable and once you navigate, you can access that variable from Room page. example provided */}
+                {JSON.parse(localStorage.getItem("user")) === "hotelowner" && (
+                  <Link to={`room/${index}`}>
+                    <Button variant="primary">See Bookings</Button>
+                  </Link>
+                )}
+                {bookRoomFormVisibility && roomIndex === index && <RoomBook />}
+              </Card.Body>
+            </Card>
+          ))}
         </div>
       </div>
     </div>
