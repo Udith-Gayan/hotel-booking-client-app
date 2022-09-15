@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 //import { Link } from "react-router-dom";
 import classes from "./LandingPage.module.css";
 import Button from "react-bootstrap/Button";
@@ -6,9 +6,13 @@ import "../Shared/styles/common.css";
 import HotelOwnerRegisterForm from "../HotelOwnerRegisterForm/HotelOwnerRegisterForm";
 import HotelOwnerLoginForm from "../HotelOwnerLoginForm/HotelOwnerLoginForm";
 import { useNavigate } from "react-router-dom";
+import ContractService from "./../../services/contract-service";
+
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const contractService = ContractService.instance;
+
   const [customerLogVisibility, setCustomerLogVisibility] = useState(false);
   const [hotelOwnerLogVisibility, setHotelOwnerLogVisibility] = useState(false);
   const [customerRegisterVisibility, setCustomerRegisterVisibility] =
@@ -65,6 +69,16 @@ const LandingPage = () => {
     setHotelOwnerRegisterVisibility(!hotelOwnerRegisterVisibility);
     setHotelOwnerLoginVisibility(!hotelOwnerLoginVisibility);
   };
+
+  const initContractService = async () => {
+    await contractService.init();
+  }
+
+  useEffect(() => {
+    initContractService();
+ }, []);
+
+
   return (
     <div className={classes.landingPageBackground}>
       <div className={classes.box}>
