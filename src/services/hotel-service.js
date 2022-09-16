@@ -1,3 +1,4 @@
+import Bookings from '../components/Bookings/Bookings';
 import ContractService from './contract-service';
 
 
@@ -254,6 +255,32 @@ export default class HotelService {
     }
 
 
+    /***
+     * Returns  { hotels: [{Id, HotelWalletAddress, HotelNftId, Name, Address, Email, IsRegistered}, {}, {}, ...] }
+     */
+    async getHotels(filters = null) {
+        let result;
+        try {
+            const messageType = 'getHotels'
+            const submitObj = {
+                type: messageType
+            };
+            result = await this.contractService.submitInputToContract(submitObj);
+        } catch (error) {
+            throw(error);
+        }
+
+        return result;
+    }
+
+    setUserWalletAddress(address) {
+        this.userWallet.address = address;
+    }
+
+    setHotelId(id) {
+        this.#hotelId = id;
+    }
+
     async getCurrentHotelDetails() {
         let result;
         try {
@@ -302,11 +329,12 @@ export default class HotelService {
                 "NFTokenTaxon": 0,
                 "URI": xrpl.convertStringToHex(new_uri),
                 "Flags": 1,
-                "Fee": "5"
+                "Fee": xrpl.xrpToDrops(5)
             });
             console.log("Mint tranaction prepared.");
 
             const signed = _wallet.sign(prepared);
+            console.log(`signed the tx by ${this.userWallet.address}`)
             const tx = await this.#xrplClient.submitAndWait(signed.tx_blob);
             console.log("Transaction result:", tx.result.meta.TransactionResult);
 
@@ -363,7 +391,7 @@ export default class HotelService {
      * @returns  { rooms: [ {nftId, roomName, id }, {...}]}
      */
 
-    async getRoomsByHotel() {
+    async getRoomsByMyHotel() {
         const messageType = 'getRoomsByHotel';
         let result;
 
@@ -388,7 +416,7 @@ export default class HotelService {
 
     /**
      * 
-     * @param {roomId, fromDate, toDate} bookObj 
+     * @param {roomId, fromDate, toDate, personName} bookObj 
      * @returns  {rowId}
      */
     async makeABooking(bookObj) {
@@ -398,7 +426,8 @@ export default class HotelService {
             data: {
                 roomId: bookObj.roomId,
                 fromDate: bookObj.fromDate,
-                toDate: bookObj.toDate
+                toDate: bookObj.toDate,
+                personName: bookObj.personName
             }
         }
 
@@ -438,7 +467,7 @@ export default class HotelService {
             throw (error);
         }
 
-        return result;
+        return this.#reArrageBookings(result);
     }
 
     async getBookingsByRoom(roomId) {
@@ -457,7 +486,26 @@ export default class HotelService {
             throw (error);
         }
 
-        return result;
+        
+
+        return this.#reArrageBookings(result);
+    }
+
+
+    #reArrageBookings(bList) {
+        console.log(bList)
+        let new_list = [];
+
+        bList.bookings.map(b => {
+            b.map(bb => {
+                bb.map(bc => {
+
+                    new_list.push(bc);
+                })
+            })
+        })
+
+        return {bookings: new_list};
     }
 
 

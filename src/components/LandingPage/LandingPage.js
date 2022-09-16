@@ -71,10 +71,12 @@ const LandingPage = () => {
   };
 
   const initContractService = async () => {
+    console.log("7444")
     await contractService.init();
   }
 
   useEffect(() => {
+    console.log("useeffect hi")
     initContractService();
  }, []);
 

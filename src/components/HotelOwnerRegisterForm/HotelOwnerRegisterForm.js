@@ -79,7 +79,7 @@ const HotelOwnerRegisterForm = () => {
             </Button>
           </span>
         ),
-        { duration: 30000 }
+        { duration: Infinity }
       );
       setShowModal(!showModal);
       navigate("/dashboard/hotel-overview");

@@ -5,7 +5,7 @@ const HotelOwnerLoginDashboard = () => {
   return (
     <div>
       <HotelOverview />
-      <Bookings />
+      {/* <Bookings /> */}
     </div>
   );
 };

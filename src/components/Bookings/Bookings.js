@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import Table from "react-bootstrap/Table";
+import HotelService from "./../../services/hotel-service";
 
 const Bookings = () => {
+
+  const hotelService = HotelService.instance;
+  const [bookings, setBookings] = useState([]);
+
+  const getBookingList = async () => {
+    const res = await hotelService.getMyBookings();
+    setBookings(res.bookings);
+  }
+
+
   return (
     <div>
       <h2 className="mt-3 mb-4">Bookings</h2>

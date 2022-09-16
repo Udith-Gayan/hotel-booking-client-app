@@ -15,7 +15,7 @@ const HotelOwnerLoginForm = () => {
   const Login = async () => {
     try {
       await hotelService.setUserWallet(secret, true);
-      toast.success("Login success");
+      toast.success("Login success", { duration: 60000});
       navigate("/dashboard/hotel-owner-login-overview");
     } catch (error) {
       console.log(error);
