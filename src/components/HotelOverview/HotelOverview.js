@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { solid } from "@fortawesome/fontawesome-svg-core/import.macro"; // <-- import styles to be used
 import Button from "react-bootstrap/Button";
@@ -9,6 +9,8 @@ import RoomBook from "../RoomBook/RoomBook";
 import { Link, useNavigate } from "react-router-dom";
 import ContractService from "./../../services/contract-service";
 import HotelService from "./../../services/hotel-service";
+import toast from "react-hot-toast";
+import Spinner from "../Spinner/Spinner";
 
 const roomDetails = [
   {
@@ -34,6 +36,9 @@ const HotelOverview = () => {
   const [bookRoomFormVisibility, setBookRoomFormVisibility] = useState(false);
   const [roomIndex, setRoomIndex] = useState(-1);
   const [myHotel, setMyHotel] = useState(null);
+  const [roomList, setRoomList] = useState([]);
+
+  const [isRoomsLoaded, setIsRoomsLoaded] = useState(false);
 
   const getMyHotelDetails = async () => {
     try {
@@ -48,7 +53,20 @@ const HotelOverview = () => {
         id: hotelObj.Id,
       };
       setMyHotel(hotel);
+      await getMyRoomList();
     } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getMyRoomList = async () => {
+    try {
+      await contractService.init();
+      const res = await hotelService.getRoomsByMyHotel();
+      setRoomList(res.rooms);
+      setIsRoomsLoaded(true);
+    } catch (error) {
+      setIsRoomsLoaded(false);
       console.log(error);
     }
   };
@@ -65,18 +83,34 @@ const HotelOverview = () => {
     try {
       const res = await hotelService.createARoom({ roomName: roomName });
       console.log(res.rowId);
+      setCreateRoomVisibility(!createRoomVisibility);
+      toast.success("Room created successfully.", { duration: 120000 })
+      await getMyRoomList();
     } catch (error) {
       console.log(error);
+      setCreateRoomVisibility(!createRoomVisibility);
     }
   };
 
-  const bookRoom = (index) => {
-    console.log("booking a room", index);
-    setRoomIndex(index);
+  const makeReservation = async (bookObj) => {
+    try {
+      const res = await hotelService.makeABooking({ roomId: roomIndex, ...bookObj });
+      toast.success("Reservation successfull.", { duration: 180000 });
+
+    } catch (error) {
+      toast.error(error, { duration: 180000 });
+      console.log(error);
+    }
+
+  }
+
+  const bookRoom = (id) => {
+    console.log("booking a room", id);
+    setRoomIndex(id);
     setBookRoomFormVisibility(!bookRoomFormVisibility);
   };
 
-  return (
+  return (  
     <div>
       <Button variant="secondary" onClick={() => navigate(-1)}>
         Back
@@ -110,37 +144,37 @@ const HotelOverview = () => {
             <CreateRoom onSubmit={submitRoomToCreate} />
           </div>
         )}
-
-        <div className={classes.cardWrapper}>
-          {roomDetails.map((roomDetail, index) => (
-            <Card
-              id={4}
-              key={index}
-              style={{ width: "18rem", display: "inline-block", margin: "5px" }}
-            >
-              <Card.Body>
-                <Card.Title>{roomDetail.name}</Card.Title>
-                <Card.Text>{roomDetail.id}</Card.Text>
-                {JSON.parse(localStorage.getItem("user")) === "customer" && (
-                  <Button
-                    variant="primary"
-                    id={index}
-                    onClick={() => bookRoom(index)}
-                  >
-                    Room Booking Panel
-                  </Button>
-                )}
-                {/* replace index with relevant variable and once you navigate, you can access that variable from Room page. example provided */}
-                {JSON.parse(localStorage.getItem("user")) === "hotelowner" && (
-                  <Link to={`room/${index}`}>
-                    <Button variant="primary">See Bookings</Button>
-                  </Link>
-                )}
-                {bookRoomFormVisibility && roomIndex === index && <RoomBook />}
-              </Card.Body>
-            </Card>
-          ))}
-        </div>
+          {!isRoomsLoaded && (<Spinner />)}
+          <div className={classes.cardWrapper}>
+            {roomList.map((roomDetail, index) => (
+              <Card
+                id={4}
+                key={roomDetail.id}
+                style={{ width: "18rem", display: "inline-block", margin: "5px" }}
+              >
+                <Card.Body>
+                  <Card.Title>{roomDetail.roomName}</Card.Title>
+                  <Card.Text>{roomDetail.nftId}</Card.Text>
+                  {JSON.parse(localStorage.getItem("user")) === "customer" && (
+                    <Button
+                      variant="primary"
+                      id={roomDetail.id}
+                      onClick={() => bookRoom(roomDetail.id)}
+                    >
+                      Make a reservation
+                    </Button>
+                  )}
+                  {/* replace index with relevant variable and once you navigate, you can access that variable from Room page. example provided */}
+                  {JSON.parse(localStorage.getItem("user")) === "hotelowner" && (
+                    <Link to={`/dashboard/hotel-owner-login-overview/room/${roomDetail.id}`}>
+                      <Button variant="primary">See Bookings</Button>
+                    </Link>
+                  )}
+                  {bookRoomFormVisibility && roomIndex === roomDetail.id && <RoomBook onSubmit={makeReservation} />}
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
       </div>
     </div>
   );
