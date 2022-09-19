@@ -16,14 +16,10 @@ export default class ContractService {
     async init() {
         console.log("init called")
         if (this.userKeyPair == null) {
-            console.log(1)
             this.userKeyPair = await HotPocket.generateKeys();
-            console.log(2)
         }
         if (this.client == null) {
-            console.log(3)
             this.client = await HotPocket.createClient([this.server], this.userKeyPair);
-            console.log(4)
         }
 
         // This will get fired if HP server disconnects unexpectedly.
@@ -43,8 +39,6 @@ export default class ContractService {
             r.outputs.forEach(o => {
                 // const outputLog = o.length <= 10000 ? o : `[Big output (${o.length / 1024} KB)]`;
                 // console.log(`Output (ledger:${r.ledgerSeqNo})>> ${outputLog}`);
-                console.log(o);
-
                 const pId = o.promiseId;
                 console.log(pId)
                 if (o.error) {
@@ -100,19 +94,5 @@ export default class ContractService {
         const randomValues = window.crypto.getRandomValues(typedArray);
         return randomValues.join('');
     }
-
-    // #region Custom Domain calls
-
-    async requestHotelRegistration(hotelDataObject) {
-        return await this.submitInputToContract(hotelDataObject);
-    }
-
-    async confirmHotelRegistration() {
-
-    }
-
-    // #endregion
-
-
 
 }

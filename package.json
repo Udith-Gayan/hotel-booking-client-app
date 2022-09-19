@@ -32,7 +32,6 @@
     "tls": "^0.0.1",
     "utf-8-validate": "^5.0.9",
     "web-vitals": "^2.1.4",
-    "xrpl": "2.4.0",
     "xrpl-binary-codec": "^1.4.2"
   },
   "scripts": {

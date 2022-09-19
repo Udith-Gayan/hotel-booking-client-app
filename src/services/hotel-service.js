@@ -1,10 +1,4 @@
-import Bookings from '../components/Bookings/Bookings';
 import ContractService from './contract-service';
-
-
-// const xrpl = require('xrpl');
-// const { XrplApi } = require('./xrpl-helpers/xrpl-api');
-// const { XrplAccount } = require('./xrpl-helpers/xrpl-account');
 
 const fundWalletAddress = process.env.REACT_APP_HOTEL_FUNDING_SEED_ACCOUNT_ADDRESS;
 const fundWalletSecret = process.env.REACT_APP_HOTEL_FUNDING_SEED_ACCOUNT_SECRET;
@@ -19,7 +13,6 @@ export default class HotelService {
     #walletServer = 'wss://hooks-testnet-v2.xrpl-labs.com';
     // #walletServer = 'wss://xls20-sandbox.rippletest.net:51233';
 
-    #xrplApi = null;
     userWallet = {
         address: null,
         secret: null,
@@ -34,7 +27,6 @@ export default class HotelService {
     #hotelId = 0;
 
     constructor() {
-        // this.#xrplApi = new XrplApi(this.#walletServer);
         this.#xrplClient = new xrpl.Client(this.#walletServer);
     }
 
@@ -82,7 +74,6 @@ export default class HotelService {
     async createNewUserWallet() {
         if (this.userWallet.address == null || this.userWallet.secret == null) {
             try {
-                // await this.#xrplApi.connect();
                 await this.#xrplClient.connect();
 
                 const new_wallet = xrpl.Wallet.generate();
@@ -208,13 +199,6 @@ export default class HotelService {
             // Connect to xrpl to accept the offer
             await this.#xrplClient.connect();
 
-            // const transactionBlob = {
-            //     TransactionType: 'NFTokenAcceptOffer',
-            //     Account: this.userWallet.address,
-            //     NFTokenSellOffer: regObj.offerId,
-            //     Memos: []
-            // };
-
             const prepared = await this.#xrplClient.autofill(
                 {
                     TransactionType: 'NFTokenAcceptOffer',
@@ -223,7 +207,6 @@ export default class HotelService {
                     Memos: []
                 }
             );
-
 
             const wallet = xrpl.Wallet.fromSeed(this.userWallet.secret)
             const signed = wallet.sign(prepared);
@@ -298,6 +281,7 @@ export default class HotelService {
 
         return result.hotels[0];
     }
+
     /**
      * Create a room by minting a token. InURI field, hotel NFTID is there
      * roomObj: {roomName: <>}
@@ -406,7 +390,6 @@ export default class HotelService {
 
             result = await this.contractService.submitInputToContract(submitObj);
 
-
         } catch (error) {
             throw (error);
         }
@@ -491,7 +474,6 @@ export default class HotelService {
         return this.#reArrageBookings(result);
     }
 
-
     #reArrageBookings(bList) {
         console.log(bList)
         let new_list = [];
@@ -507,8 +489,4 @@ export default class HotelService {
 
         return {bookings: new_list};
     }
-
-
-
-
 }
