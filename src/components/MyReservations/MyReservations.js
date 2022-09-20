@@ -51,7 +51,7 @@ const MyReservations = () => {
           </thead>
           <tbody>
             {bookings.map((book, i) => (
-              <tr>
+              <tr key={i}>
                 <td>{i + 1}</td>
                 <td>{book.hotelName}</td>
                 <td>{book.roomName}</td>

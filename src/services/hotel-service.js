@@ -86,7 +86,7 @@ export default class HotelService {
                 console.log(new_wallet);
             } catch (error) {
                 console.log(`Error in account creation: ${error}`);
-                throw (`Error in account creation: ${error}`);
+                throw(`Error in account creation: ${error}`);
             } finally {
                 this.#xrplClient.disconnect();
             }
@@ -179,6 +179,7 @@ export default class HotelService {
         let result;
         try {
             result = await this.contractService.submitInputToContract(submitObj);
+            console.log(result);
             // result: { {"rowId":4,"offerId":"266BF70C1E820CCD8597B99B1A31E682E7E883D4C0C2385CE71A3405C180DF79"} }
             this.#hotelId = result.rowId;
             result = await this.#acceptHotelRegistrationOffer(result);
@@ -246,7 +247,8 @@ export default class HotelService {
         try {
             const messageType = 'getHotels'
             const submitObj = {
-                type: messageType
+                type: messageType,
+                filters: filters
             };
             result = await this.contractService.submitInputToContract(submitObj);
         } catch (error) {

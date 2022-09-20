@@ -18,7 +18,7 @@ const Hotels = () => {
   const getHotelList = async () => {
     console.log("Getting hotel list")
     try {
-      const res = await hotelService.getHotels();
+      const res = await hotelService.getHotels({isRegistered: 1});
       console.log(res)
       setHotels(res.hotels);
       setHotelsCopy(res.hotels);
@@ -31,7 +31,7 @@ const Hotels = () => {
 
   useEffect(() => {
     getHotelList();
-  }, [hotelService]);
+  });
 
   const seeMore = (hObj) => {
     hotelService.setUserWalletAddress(hObj.HotelWalletAddress);
@@ -40,7 +40,7 @@ const Hotels = () => {
   }
 
   const searchByLocation = (inp) => {
-    if (inp?.length == 0) {
+    if (inp?.length === 0) {
       setHotelsCopy(hotels);
     } else if (inp && inp.length > 0) {
       setHotelsCopy(hotels.filter(h => h.Address.startsWith(inp)));

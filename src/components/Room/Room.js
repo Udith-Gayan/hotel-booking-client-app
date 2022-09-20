@@ -51,7 +51,7 @@ const Room = () => {
 
           {bookings.map((book, i) => (
 
-            <tr>
+            <tr key={i}>
               <td>{i+1}</td>
               <td>{book.roomName}</td>
               <td>{book.customer}</td>
