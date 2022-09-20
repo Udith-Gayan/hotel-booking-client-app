@@ -44,8 +44,6 @@ const HotelOwnerRegisterForm = () => {
   //   );
 
   const submitForm = useCallback(async () => {
-    // toast.success("Registered successfully.");
-    // await contractService.init();
     console.log("Submtted.");
     const regObj = {
       hotelName: hotelName,
@@ -54,7 +52,6 @@ const HotelOwnerRegisterForm = () => {
     };
 
     try {
-      await contractService.init();
       const newUserWallet = await hotelService.createNewUserWallet();
       console.log(newUserWallet);
       const output = await hotelService.registerHotel(regObj);
@@ -84,7 +81,7 @@ const HotelOwnerRegisterForm = () => {
       setShowModal(!showModal);
       navigate("/dashboard/hotel-overview");
     } catch (error) {
-      toast.error("Hotel Registration failed. Refresh and try again.", {duration: 1500})
+      toast.error("Hotel Registration failed. Refresh and try again.", {duration: 10000})
       console.log(error);
     }
   }, [contractService, hotelName, email, address, hotelService]);

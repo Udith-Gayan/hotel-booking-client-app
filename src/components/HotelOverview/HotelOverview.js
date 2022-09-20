@@ -28,7 +28,6 @@ const HotelOverview = () => {
 
   const getMyHotelDetails = async () => {
     try {
-      await contractService.init();
       const hotelObj = await hotelService.getCurrentHotelDetails();
       const hotel = {
         name: hotelObj.Name,
@@ -47,7 +46,7 @@ const HotelOverview = () => {
 
   const getMyRoomList = async () => {
     try {
-      await contractService.init();
+      // await contractService.init();
       const res = await hotelService.getRoomsByMyHotel();
       setRoomList(res.rooms);
       setIsRoomsLoaded(true);
