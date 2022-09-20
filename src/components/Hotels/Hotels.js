@@ -5,12 +5,14 @@ import { useNavigate } from "react-router-dom";
 import classes from "./Hotels.module.css";
 import HotelService from "./../../services/hotel-service";
 import Spinner from "../Spinner/Spinner";
+import { Form } from "react-bootstrap";
 
 const Hotels = () => {
   const navigate = useNavigate();
   const hotelService = HotelService.instance;
 
   const [hotels, setHotels] = useState([]);
+  const [hotelsCopy, setHotelsCopy] = useState([]);
   const [isHotelsLoaded, setisHotelsLoaded] = useState(false);
 
   const getHotelList = async () => {
@@ -19,6 +21,7 @@ const Hotels = () => {
       const res = await hotelService.getHotels();
       console.log(res)
       setHotels(res.hotels);
+      setHotelsCopy(res.hotels);
       setisHotelsLoaded(true);
     } catch (error) {
       setisHotelsLoaded(false);
@@ -36,6 +39,13 @@ const Hotels = () => {
     navigate("/dashboard/hotel-overview")
   }
 
+  const searchByLocation = (inp) => {
+    if (inp?.length == 0) {
+      setHotelsCopy(hotels);
+    } else if (inp && inp.length > 0) {
+      setHotelsCopy(hotels.filter(h => h.Address.startsWith(inp)));
+    }
+  }
 
   return (
     <div>
@@ -50,13 +60,21 @@ const Hotels = () => {
       </Button>
 
       <div className={classes.hotelListWrapper}>
+
+      <Form>
+        <Form.Group className="mb-3" controlId="roomName">
+          <Form.Label>Search by Location</Form.Label>
+          <Form.Control type="text" placeholder="Location" onChange={e => searchByLocation(e.target.value)} />
+        </Form.Group>
+      </Form>
+
         <Accordion defaultActiveKey="0">
           {!isHotelsLoaded && (<Spinner />)}
-          {hotels.map((hotel, i) => { return (
+          {hotelsCopy.map((hotel, i) => { return (
             <Accordion.Item eventKey={i} key={i}>
-              <Accordion.Header>{hotel.Name}</Accordion.Header>
+              <Accordion.Header>{hotel.Name} - {hotel.Address}</Accordion.Header>
               <Accordion.Body>
-                {hotel.HotelWalletAddress}
+                Hotel Wallet: {hotel.HotelWalletAddress}
                 <div>
                   <Button
                     variant="primary"

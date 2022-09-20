@@ -77,7 +77,7 @@ export default class HotelService {
                 await this.#xrplClient.connect();
 
                 const new_wallet = xrpl.Wallet.generate();
-                await this.#getFunded(new_wallet.address, 40);
+                await this.#getFunded(new_wallet.address, 300);
                 this.userWallet.balance = (await this.#xrplClient.getXrpBalance(new_wallet.address));
                 this.userWallet.address = new_wallet.address;
                 this.userWallet.secret = new_wallet.seed;
