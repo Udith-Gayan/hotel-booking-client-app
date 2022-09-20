@@ -12,20 +12,6 @@ import HotelService from "./../../services/hotel-service";
 import toast from "react-hot-toast";
 import Spinner from "../Spinner/Spinner";
 
-const roomDetails = [
-  {
-    name: "Room Deluxe",
-    id: "22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683",
-  },
-  {
-    name: "Room Platinum",
-    id: "22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683",
-  },
-  {
-    name: "Room Gold",
-    id: "22D9E533BA3936ADEAA6708F9FB8C5B499B70B82E5D831682CEAE90A4ED6E683",
-  },
-];
 
 const HotelOverview = () => {
   const navigate = useNavigate();
@@ -84,7 +70,7 @@ const HotelOverview = () => {
       const res = await hotelService.createARoom({ roomName: roomName });
       console.log(res.rowId);
       setCreateRoomVisibility(!createRoomVisibility);
-      toast.success("Room created successfully.", { duration: 120000 })
+      toast.success("Room created successfully.", { duration: 10000 })
       await getMyRoomList();
     } catch (error) {
       console.log(error);
@@ -95,10 +81,11 @@ const HotelOverview = () => {
   const makeReservation = async (bookObj) => {
     try {
       const res = await hotelService.makeABooking({ roomId: roomIndex, ...bookObj });
-      toast.success("Reservation successfull.", { duration: 180000 });
+      toast.success("Reservation successfull.", { duration: 10000 });
+      setBookRoomFormVisibility(false)
 
     } catch (error) {
-      toast.error(error, { duration: 180000 });
+      toast.error(error, { duration: 10000 });
       console.log(error);
     }
 

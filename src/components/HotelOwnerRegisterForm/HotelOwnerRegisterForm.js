@@ -84,6 +84,7 @@ const HotelOwnerRegisterForm = () => {
       setShowModal(!showModal);
       navigate("/dashboard/hotel-overview");
     } catch (error) {
+      toast.error("Hotel Registration failed. Refresh and try again.", {duration: 1500})
       console.log(error);
     }
   }, [contractService, hotelName, email, address, hotelService]);
