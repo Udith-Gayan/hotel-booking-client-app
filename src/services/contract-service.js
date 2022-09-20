@@ -14,7 +14,7 @@ export default class ContractService {
     promiseMap = new Map();
 
     async init() {
-        console.log("init called")
+        console.log("Initialized")
         if (this.userKeyPair == null) {
             this.userKeyPair = await HotPocket.generateKeys();
         }
@@ -35,12 +35,10 @@ export default class ContractService {
 
         // This will get fired when contract sends outputs.
         this.client.on(HotPocket.events.contractOutput, (r) => {
-            console.log(r.outputs)
             r.outputs.forEach(o => {
                 // const outputLog = o.length <= 10000 ? o : `[Big output (${o.length / 1024} KB)]`;
                 // console.log(`Output (ledger:${r.ledgerSeqNo})>> ${outputLog}`);
                 const pId = o.promiseId;
-                console.log(pId)
                 if (o.error) {
                     this.promiseMap.get(pId).rejecter(o.error);
                 } else {
