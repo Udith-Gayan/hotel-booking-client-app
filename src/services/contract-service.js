@@ -103,4 +103,17 @@ export default class ContractService {
         return randomValues.join('');
     }
 
+    async submitReadRequest(inp) {
+        const inpString = JSON.stringify(inp);
+
+        const output = await client.submitContractReadRequest(inpString);
+        if(output.error) {
+            throw(output.error);
+        } else {
+            return output.success;
+        }
+
+
+    }
+
 }
