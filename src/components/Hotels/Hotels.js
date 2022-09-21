@@ -31,7 +31,7 @@ const Hotels = () => {
 
   useEffect(() => {
     getHotelList();
-  });
+  }, []);
 
   const seeMore = (hObj) => {
     hotelService.setUserWalletAddress(hObj.HotelWalletAddress);
