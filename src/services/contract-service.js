@@ -17,10 +17,10 @@ export default class ContractService {
 
     async init() {
 
-        // Check for one time run
-        if (this.isInitCalled) {
-            return true;
-        }
+        // // Check for one time run
+        // if (this.isInitCalled) {
+        //     return true;
+        // }
 
         console.log("Initialized")
         if (this.userKeyPair == null) {
