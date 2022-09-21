@@ -106,7 +106,7 @@ export default class ContractService {
     async submitReadRequest(inp) {
         const inpString = JSON.stringify(inp);
 
-        const output = await client.submitContractReadRequest(inpString);
+        const output = await this.client.submitContractReadRequest(inpString);
         if(output.error) {
             throw(output.error);
         } else {
