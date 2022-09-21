@@ -250,7 +250,7 @@ export default class HotelService {
                 type: messageType,
                 filters: filters
             };
-            result = await this.contractService.submitInputToContract(submitObj);
+            result = await this.contractService.submitReadRequest(submitObj);
         } catch (error) {
             throw(error);
         }
@@ -276,7 +276,7 @@ export default class HotelService {
                     hotelWalletAddress: this.userWallet.address
                 }
             };
-            result = await this.contractService.submitInputToContract(submitObj);
+            result = await this.contractService.submitReadRequest(submitObj);
         } catch (error) {
             throw(error);
         }
@@ -390,7 +390,7 @@ export default class HotelService {
                 }
             }
 
-            result = await this.contractService.submitInputToContract(submitObj);
+            result = await this.contractService.submitReadRequest(submitObj);
 
         } catch (error) {
             throw (error);
@@ -447,7 +447,7 @@ export default class HotelService {
 
         let result;
         try {
-            result = await this.contractService.submitInputToContract(submitObj);
+            result = await this.contractService.submitReadRequest(submitObj);
         } catch (error) {
             throw (error);
         }
@@ -466,7 +466,7 @@ export default class HotelService {
 
         let result;
         try {
-            result = await this.contractService.submitInputToContract(submitObj);
+            result = await this.contractService.submitReadRequest(submitObj);
         } catch (error) {
             throw (error);
         }
