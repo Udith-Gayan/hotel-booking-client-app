@@ -11,9 +11,17 @@ export default class ContractService {
     isConnectionSucceeded = false;
     server = `wss://${nodeIp}:${nodePort}`
 
+    isInitCalled = false;
+
     promiseMap = new Map();
 
     async init() {
+
+        // Check for one time run
+        if (this.isInitCalled) {
+            return true;
+        }
+
         console.log("Initialized")
         if (this.userKeyPair == null) {
             this.userKeyPair = await HotPocket.generateKeys();
@@ -61,6 +69,8 @@ export default class ContractService {
             console.log('HotPocket Connected.');
             this.isConnectionSucceeded = true;
         }
+
+        this.isInitCalled = true;
 
         return true;
     }
