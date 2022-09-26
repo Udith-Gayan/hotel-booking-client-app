@@ -15,7 +15,6 @@ const Room = () => {
     try {
       const res = await hotelService.getBookingsByRoom(parseInt(id));
       setBookings(res.bookings);
-      
     } catch (error) {
       console.log(error);
     }
@@ -25,16 +24,15 @@ const Room = () => {
     getRoomBookings();
   }, [id]);
 
-
-
   return (
     <div>
       <Button variant="secondary" onClick={() => navigate(-1)}>
         Back
       </Button>
       {/* example mentioned */}
-      <br /><br />
-      Room {id}
+      <br />
+      <br />
+
       {/* example mentioned */}
       <h2 className="mt-3 mb-4">Room Bookings</h2>
       <Table striped bordered hover size="sm">
@@ -48,20 +46,15 @@ const Room = () => {
           </tr>
         </thead>
         <tbody>
-
           {bookings.map((book, i) => (
-
             <tr key={i}>
-              <td>{i+1}</td>
+              <td>{i + 1}</td>
               <td>{book.roomName}</td>
               <td>{book.customer}</td>
               <td>{book.fromDate}</td>
               <td>{book.toDate}</td>
             </tr>
-
           ))}
-
-
         </tbody>
       </Table>
     </div>

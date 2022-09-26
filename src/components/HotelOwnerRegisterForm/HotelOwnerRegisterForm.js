@@ -19,6 +19,8 @@ const HotelOwnerRegisterForm = () => {
   const [email, setEmail] = useState(null);
   const [address, setAddress] = useState(null);
 
+  const [registerButtonDisable, setRegisterButtonDisable] = useState(false);
+
   // const handleChangeAddress = useCallback(async () => {
   //   setShowModal(!showModal);
   //   toast(
@@ -45,17 +47,17 @@ const HotelOwnerRegisterForm = () => {
 
   const submitForm = useCallback(async () => {
     console.log("Submtted.");
+    setRegisterButtonDisable(true);
     const regObj = {
       hotelName: hotelName,
       location: address,
       email: email,
     };
-
+    const id = toast.loading("Please wait...");
     try {
       const newUserWallet = await hotelService.createNewUserWallet();
       console.log(newUserWallet);
       const output = await hotelService.registerHotel(regObj);
-      console.log("Register successfull");
       console.log(output);
       toast(
         (t) => (
@@ -76,13 +78,18 @@ const HotelOwnerRegisterForm = () => {
             </Button>
           </span>
         ),
-        { duration: Infinity }
+        { id: id, duration: Infinity }
       );
+
       setShowModal(!showModal);
       navigate("/dashboard/hotel-overview");
     } catch (error) {
-      toast.error("Hotel Registration failed. Refresh and try again.", {duration: 10000})
+      toast.error("Hotel Registration failed. Refresh and try again.", {
+        id: id,
+        duration: 10000,
+      });
       console.log(error);
+      setRegisterButtonDisable(false);
     }
   }, [contractService, hotelName, email, address, hotelService]);
 
@@ -122,7 +129,11 @@ const HotelOwnerRegisterForm = () => {
           />
         </Form.Group>
 
-        <Button variant="primary" onClick={submitForm}>
+        <Button
+          variant="primary"
+          onClick={submitForm}
+          disabled={registerButtonDisable}
+        >
           Register
         </Button>
       </Form>
