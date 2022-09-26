@@ -11,13 +11,18 @@ const HotelOwnerLoginForm = () => {
   const hotelService = HotelService.instance;
 
   const [secret, setSecret] = useState(null);
+  const [loginButtonDisable, setLoginButtonDisable] = useState(false);
 
   const Login = async () => {
+    const id = toast.loading("Please wait...");
+    setLoginButtonDisable(true);
     try {
       await hotelService.setUserWallet(secret, true);
-      toast.success("Login success", { duration: 60000});
+      toast.success("Login success", { id: id, duration: 60000 });
       navigate("/dashboard/hotel-owner-login-overview");
     } catch (error) {
+      setLoginButtonDisable(false);
+      toast.error("Login Failed", { id: id, duration: 60000 });
       console.log(error);
     }
   };
@@ -33,7 +38,11 @@ const HotelOwnerLoginForm = () => {
           />
         </Form.Group>
 
-        <Button variant="primary" onClick={() => Login()}>
+        <Button
+          variant="primary"
+          onClick={() => Login()}
+          disabled={loginButtonDisable}
+        >
           Login
         </Button>
       </Form>

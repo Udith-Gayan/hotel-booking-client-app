@@ -7,7 +7,7 @@ import HotelOwnerRegisterForm from "../HotelOwnerRegisterForm/HotelOwnerRegister
 import HotelOwnerLoginForm from "../HotelOwnerLoginForm/HotelOwnerLoginForm";
 import { useNavigate } from "react-router-dom";
 import ContractService from "./../../services/contract-service";
-
+import toast from "react-hot-toast";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -22,6 +22,8 @@ const LandingPage = () => {
     useState(false);
   const [hotelOwnerLoginVisibility, setHotelOwnerLoginVisibility] =
     useState(false);
+
+  const [landingPageButton, setLandingPageButton] = useState(true);
 
   const [
     hotelOwnerRegisterFormVisibility,
@@ -70,13 +72,19 @@ const LandingPage = () => {
   };
 
   const initContractService = async () => {
-    await contractService.init();
-  }
+    const initService = await contractService.init();
+
+    if (initService) {
+      setLandingPageButton(false);
+      toast.success("Connected!");
+    } else {
+      setLandingPageButton(true);
+    }
+  };
 
   useEffect(() => {
     initContractService();
- }, []);
-
+  }, []);
 
   return (
     <div className={classes.landingPageBackground}>
@@ -89,6 +97,7 @@ const LandingPage = () => {
               variant="warning"
               className="m-2 p-3"
               onClick={() => customerClick()}
+              disabled={landingPageButton}
             >
               Are you looking for Hotel?
             </Button>
@@ -119,6 +128,7 @@ const LandingPage = () => {
               variant="warning"
               className="m-2 p-3"
               onClick={() => hotelOwnerClick()}
+              disabled={landingPageButton}
             >
               Are you a Hotel Owner?
             </Button>
