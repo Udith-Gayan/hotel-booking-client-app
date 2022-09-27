@@ -18,7 +18,7 @@ const HotelOwnerLoginForm = () => {
     setLoginButtonDisable(true);
     try {
       await hotelService.setUserWallet(secret, true);
-      toast.success("Login success", { id: id, duration: 60000 });
+      toast.success("Login success", { id: id, duration: 5000 });
       navigate("/dashboard/hotel-owner-login-overview");
     } catch (error) {
       setLoginButtonDisable(false);

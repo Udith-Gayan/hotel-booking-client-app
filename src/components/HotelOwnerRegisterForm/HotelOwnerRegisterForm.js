@@ -8,6 +8,7 @@ import SecretModal from "../SecretModal/SecretModal";
 import ContractService from "./../../services/contract-service";
 import HotelService from "./../../services/hotel-service";
 
+let toastId = 0;
 const HotelOwnerRegisterForm = () => {
   const navigate = useNavigate();
   const contractService = ContractService.instance;
@@ -53,10 +54,17 @@ const HotelOwnerRegisterForm = () => {
       location: address,
       email: email,
     };
-    const id = toast.loading("Please wait...");
+
     try {
+      toastId = toast.loading("Creating a hotel wallet...");
+      //creating a hotel wallet...
       const newUserWallet = await hotelService.createNewUserWallet();
       console.log(newUserWallet);
+      //started hotel registration 1second
+      toast("Started hotel registration", {
+        id: toastId,
+        duration: 3000,
+      });
       const output = await hotelService.registerHotel(regObj);
       console.log(output);
       toast(
@@ -78,14 +86,14 @@ const HotelOwnerRegisterForm = () => {
             </Button>
           </span>
         ),
-        { id: id, duration: Infinity }
+        { id: await hotelService.toastId, duration: Infinity }
       );
 
       setShowModal(!showModal);
       navigate("/dashboard/hotel-overview");
     } catch (error) {
       toast.error("Hotel Registration failed. Refresh and try again.", {
-        id: id,
+        id: toastId,
         duration: 10000,
       });
       console.log(error);
