@@ -64,16 +64,15 @@ const HotelOverview = () => {
   };
 
   const submitRoomToCreate = async (roomName) => {
-    const id = toast.loading("Please wait...");
     try {
       const res = await hotelService.createARoom({ roomName: roomName });
       console.log(res.rowId);
       setCreateRoomVisibility(!createRoomVisibility);
-      toast.success("Room created successfully.", { id: id, duration: 10000 });
+      toast.success("Room created successfully.", { duration: 5000 });
       await getMyRoomList();
     } catch (error) {
       console.log(error);
-      toast.error("Error in room creation.", { id: id, duration: 10000 });
+      toast.error("Error in room creation.", { duration: 5000 });
       setCreateRoomVisibility(!createRoomVisibility);
     }
   };
